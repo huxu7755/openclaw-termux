@@ -65,10 +65,8 @@ class ProviderConfigService {
     final apiKeyJson = jsonEncode(apiKey);
     final baseUrlJson = jsonEncode(provider.baseUrl);
     final modelJson = jsonEncode(model);
+    final isOllama = provider.id == 'ollama';
 
-    // Build the provider object with the model as an object containing `id`,
-    // not a bare string. OpenClaw expects: models: [{ id: "model-name" }].
-    // Writing a bare string causes config validation failure (#83, #88).
     final script = '''
 const fs = require("fs");
 const p = "$_configPath";
@@ -77,7 +75,7 @@ try { c = JSON.parse(fs.readFileSync(p, "utf8")); } catch {}
 if (!c.models) c.models = {};
 if (!c.models.providers) c.models.providers = {};
 c.models.providers[$providerIdJson] = {
-  apiKey: $apiKeyJson,
+  ${isOllama ? '' : 'apiKey: $apiKeyJson,'}
   baseUrl: $baseUrlJson,
   models: [{ id: $modelJson }]
 };
@@ -126,11 +124,14 @@ fs.writeFileSync(p, JSON.stringify(c, null, 2));
     // Merge provider entry — models must be objects with `id`, not bare strings (#83, #88).
     config['models'] ??= <String, dynamic>{};
     (config['models'] as Map<String, dynamic>)['providers'] ??= <String, dynamic>{};
-    ((config['models'] as Map<String, dynamic>)['providers'] as Map<String, dynamic>)[providerId] = {
-      'apiKey': apiKey,
+    final providerEntry = <String, dynamic>{
       'baseUrl': baseUrl,
       'models': [{'id': model}],
     };
+    if (apiKey.isNotEmpty) {
+      providerEntry['apiKey'] = apiKey;
+    }
+    ((config['models'] as Map<String, dynamic>)['providers'] as Map<String, dynamic>)[providerId] = providerEntry;
 
     // Set active model
     config['agents'] ??= <String, dynamic>{};

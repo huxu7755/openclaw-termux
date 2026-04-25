@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -34,6 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _sshInstalled = false;
   bool _storageGranted = false;
   bool _checkingUpdate = false;
+  Locale? _currentLocale;
 
   @override
   void initState() {
@@ -45,6 +47,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _prefs.init();
     _autoStart = _prefs.autoStartGateway;
     _nodeEnabled = _prefs.nodeEnabled;
+    _currentLocale = _prefs.locale;
 
     try {
       final arch = await NativeBridge.getArch();
@@ -83,17 +86,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: Text(l10n.settings)),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
               children: [
                 _sectionHeader(theme, 'GENERAL'),
+                ListTile(
+                  title: Text(l10n.language),
+                  subtitle: Text(_currentLocale?.languageCode == 'zh' ? l10n.chinese : l10n.english),
+                  leading: const Icon(Icons.language),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showLanguageDialog(context, l10n),
+                ),
                 SwitchListTile(
-                  title: const Text('Auto-start gateway'),
-                  subtitle: const Text('Start the gateway when the app opens'),
+                  title: Text(l10n.autoStart),
+                  subtitle: Text('Start the gateway when the app opens'),
                   value: _autoStart,
                   onChanged: (value) {
                     setState(() => _autoStart = value);
@@ -101,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   },
                 ),
                 ListTile(
-                  title: const Text('Battery Optimization'),
+                  title: Text(l10n.batteryOptimization),
                   subtitle: Text(_batteryOptimized
                       ? 'Optimized (may kill background sessions)'
                       : 'Unrestricted (recommended)'),
@@ -111,7 +122,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       : const Icon(Icons.check_circle, color: AppColors.statusGreen),
                   onTap: () async {
                     await NativeBridge.requestBatteryOptimization();
-                    // Refresh status after returning from settings
                     final optimized = await NativeBridge.isBatteryOptimized();
                     setState(() => _batteryOptimized = optimized);
                   },
@@ -334,6 +344,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ],
             ),
     );
+  }
+
+  Future<void> _showLanguageDialog(BuildContext context, AppLocalizations l10n) async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.language),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: Text(l10n.english),
+              leading: Radio<String>(
+                value: 'en',
+                groupValue: _currentLocale?.languageCode ?? 'en',
+                onChanged: (value) => Navigator.pop(ctx, value),
+              ),
+              onTap: () => Navigator.pop(ctx, 'en'),
+            ),
+            ListTile(
+              title: Text(l10n.chinese),
+              leading: Radio<String>(
+                value: 'zh',
+                groupValue: _currentLocale?.languageCode ?? 'en',
+                onChanged: (value) => Navigator.pop(ctx, value),
+              ),
+              onTap: () => Navigator.pop(ctx, 'zh'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (result != null) {
+      final newLocale = result == 'en' ? const Locale('en') : const Locale('zh');
+      setState(() => _currentLocale = newLocale);
+      _prefs.locale = newLocale;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.language}: ${result == 'zh' ? l10n.chinese : l10n.english}')),
+        );
+      }
+    }
   }
 
   Future<String> _getSnapshotPath() async {

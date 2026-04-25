@@ -133,6 +133,29 @@ class AiProvider {
     apiKeyHint: 'xai-...',
   );
 
+  static const ollama = AiProvider(
+    id: 'ollama',
+    name: 'Ollama',
+    description: 'Local LLM inference (no API key required)',
+    icon: Icons.computer,
+    color: Color(0xFF16A34A),
+    baseUrl: 'http://localhost:11434/v1',
+    defaultModels: [
+      'llama3',
+      'llama3.1',
+      'llama3.2',
+      'mistral',
+      'qwen2.5',
+      'deepseek-r1',
+      'gemma4:e2b',
+      'gemma4:e4b',
+      'qwen3.5:2b',
+      'qwen3.5:4b',
+      'qwen3.5:9b',
+    ],
+    apiKeyHint: '(no key needed)',
+  );
+
   /// All available AI providers.
-  static const all = [anthropic, openai, google, openrouter, nvidia, deepseek, xai];
+  static const all = [anthropic, openai, google, openrouter, nvidia, deepseek, xai, ollama];
 }

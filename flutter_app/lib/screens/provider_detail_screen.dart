@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../app.dart';
 import '../models/ai_provider.dart';
 import '../services/provider_config_service.dart';
@@ -31,7 +32,9 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
   bool _saving = false;
   bool _removing = false;
 
-  bool get _isConfigured => widget.existingApiKey != null && widget.existingApiKey!.isNotEmpty;
+  bool get _isConfigured => widget.provider.id == 'ollama'
+      ? widget.existingModel != null && widget.existingModel!.isNotEmpty
+      : widget.existingApiKey != null && widget.existingApiKey!.isNotEmpty;
 
   /// Returns the effective model name to save.
   String get _effectiveModel =>
@@ -63,16 +66,17 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
 
   Future<void> _save() async {
     final apiKey = _apiKeyController.text.trim();
-    if (apiKey.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('API key cannot be empty')),
-      );
-      return;
-    }
     final model = _effectiveModel;
     if (model.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Model name cannot be empty')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.modelNameCannotBeEmpty)),
+      );
+      return;
+    }
+
+    if (apiKey.isEmpty && widget.provider.id != 'ollama') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.apiKeyCannotBeEmpty)),
       );
       return;
     }
@@ -86,14 +90,14 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${widget.provider.name} configured and activated')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.providerConfigured(widget.provider.name))),
         );
         Navigator.of(context).pop(true);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToSave(e.toString()))),
         );
       }
     } finally {
@@ -102,19 +106,20 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
   }
 
   Future<void> _remove() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Remove ${widget.provider.name}?'),
-        content: const Text('This will delete the API key and deactivate the model.'),
+        title: Text(l10n.removeProviderTitle(widget.provider.name)),
+        content: Text(l10n.removeProviderContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Remove'),
+            child: Text(l10n.remove),
           ),
         ],
       ),
@@ -127,14 +132,14 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       await ProviderConfigService.removeProviderConfig(provider: widget.provider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${widget.provider.name} removed')),
+          SnackBar(content: Text(l10n.providerRemoved(widget.provider.name))),
         );
         Navigator.of(context).pop(true);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to remove: $e')),
+          SnackBar(content: Text(l10n.failedToRemove(e.toString()))),
         );
       }
     } finally {
@@ -147,6 +152,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final iconBg = isDark ? AppColors.darkSurfaceAlt : const Color(0xFFF3F4F6);
+    final l10n = AppLocalizations.of(context)!;
+    final isOllama = widget.provider.id == 'ollama';
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.provider.name)),
@@ -195,28 +202,30 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
           ),
           const SizedBox(height: 24),
 
-          // API Key
-          Text(
-            'API Key',
-            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: _apiKeyController,
-            obscureText: _obscureKey,
-            decoration: InputDecoration(
-              hintText: widget.provider.apiKeyHint,
-              suffixIcon: IconButton(
-                icon: Icon(_obscureKey ? Icons.visibility_off : Icons.visibility),
-                onPressed: () => setState(() => _obscureKey = !_obscureKey),
+          // API Key (not shown for Ollama)
+          if (!isOllama) ...[
+            Text(
+              l10n.apiKey,
+              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _apiKeyController,
+              obscureText: _obscureKey,
+              decoration: InputDecoration(
+                hintText: widget.provider.apiKeyHint,
+                suffixIcon: IconButton(
+                  icon: Icon(_obscureKey ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _obscureKey = !_obscureKey),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 24),
+            const SizedBox(height: 24),
+          ],
 
           // Model selection
           Text(
-            'Model',
+            l10n.model,
             style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -227,9 +236,9 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
             items: [
               ...widget.provider.defaultModels
                   .map((m) => DropdownMenuItem(value: m, child: Text(m))),
-              const DropdownMenuItem(
+              DropdownMenuItem(
                 value: _customModelSentinel,
-                child: Text('Custom...'),
+                child: Text(l10n.custom),
               ),
             ],
             onChanged: (value) {
@@ -245,9 +254,9 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
             const SizedBox(height: 12),
             TextField(
               controller: _customModelController,
-              decoration: const InputDecoration(
-                hintText: 'e.g. meta/llama-3.3-70b-instruct',
-                labelText: 'Custom model name',
+              decoration: InputDecoration(
+                hintText: l10n.customModelHint,
+                labelText: l10n.customModelName,
               ),
             ),
           ],
@@ -262,7 +271,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
-                : const Text('Save & Activate'),
+                : Text(l10n.saveAndActivate),
           ),
           if (_isConfigured) ...[
             const SizedBox(height: 12),
@@ -274,7 +283,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Remove Configuration'),
+                  : Text(l10n.removeConfiguration),
             ),
           ],
         ],
