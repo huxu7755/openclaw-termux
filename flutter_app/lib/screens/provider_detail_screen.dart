@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../app.dart';
 import '../models/ai_provider.dart';
 import '../services/provider_config_service.dart';
@@ -69,14 +68,14 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
     final model = _effectiveModel;
     if (model.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.modelNameCannotBeEmpty)),
+        SnackBar(content: Text('Model name cannot be empty')),
       );
       return;
     }
 
     if (apiKey.isEmpty && widget.provider.id != 'ollama') {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.apiKeyCannotBeEmpty)),
+        SnackBar(content: Text('API key cannot be empty')),
       );
       return;
     }
@@ -90,14 +89,14 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.providerConfigured(widget.provider.name))),
+          SnackBar(content: Text('${widget.provider.name} configured and activated')),
         );
         Navigator.of(context).pop(true);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedToSave(e.toString()))),
+          SnackBar(content: Text('Failed to save: ${e.toString()}')),
         );
       }
     } finally {
@@ -106,20 +105,19 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
   }
 
   Future<void> _remove() async {
-    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(l10n.removeProviderTitle(widget.provider.name)),
-        content: Text(l10n.removeProviderContent),
+        title: Text('Remove ${widget.provider.name}?'),
+        content: Text('This will delete the API key and deactivate the model.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l10n.cancel),
+            child: Text('Cancel'),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l10n.remove),
+            child: Text('Remove'),
           ),
         ],
       ),
@@ -132,14 +130,14 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
       await ProviderConfigService.removeProviderConfig(provider: widget.provider);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.providerRemoved(widget.provider.name))),
+          SnackBar(content: Text('${widget.provider.name} removed')),
         );
         Navigator.of(context).pop(true);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.failedToRemove(e.toString()))),
+          SnackBar(content: Text('Failed to remove: ${e.toString()}')),
         );
       }
     } finally {
@@ -152,7 +150,6 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final iconBg = isDark ? AppColors.darkSurfaceAlt : const Color(0xFFF3F4F6);
-    final l10n = AppLocalizations.of(context)!;
     final isOllama = widget.provider.id == 'ollama';
 
     return Scaffold(
@@ -205,7 +202,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
           // API Key (not shown for Ollama)
           if (!isOllama) ...[
             Text(
-              l10n.apiKey,
+              'API Key',
               style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 8),
@@ -225,7 +222,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
 
           // Model selection
           Text(
-            l10n.model,
+            'Model',
             style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 8),
@@ -238,7 +235,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                   .map((m) => DropdownMenuItem(value: m, child: Text(m))),
               DropdownMenuItem(
                 value: _customModelSentinel,
-                child: Text(l10n.custom),
+                child: Text('Custom...'),
               ),
             ],
             onChanged: (value) {
@@ -255,8 +252,8 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
             TextField(
               controller: _customModelController,
               decoration: InputDecoration(
-                hintText: l10n.customModelHint,
-                labelText: l10n.customModelName,
+                hintText: 'e.g. meta/llama-3.3-70b-instruct',
+                labelText: 'Custom model name',
               ),
             ),
           ],
@@ -271,7 +268,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
-                : Text(l10n.saveAndActivate),
+                : Text('Save & Activate'),
           ),
           if (_isConfigured) ...[
             const SizedBox(height: 12),
@@ -283,7 +280,7 @@ class _ProviderDetailScreenState extends State<ProviderDetailScreen> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : Text(l10n.removeConfiguration),
+                  : Text('Remove Configuration'),
             ),
           ],
         ],

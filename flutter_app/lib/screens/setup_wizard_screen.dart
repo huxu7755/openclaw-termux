@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../app.dart';
 import '../constants.dart';
@@ -40,7 +39,6 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -66,7 +64,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    l10n.setupWizardTitle,
+                    'Setup OpenClaw',
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -74,15 +72,15 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                   const SizedBox(height: 8),
                   Text(
                     _started
-                        ? l10n.setupWizardInProgress
-                        : l10n.setupWizardDescription,
+                        ? 'Setting up the environment. This may take several minutes.'
+                        : 'This will download Ubuntu, Node.js, and OpenClaw into a self-contained environment.',
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 32),
                   Expanded(
-                    child: _buildSteps(state, theme, isDark, l10n),
+                    child: _buildSteps(state, theme, isDark),
                   ),
                   if (state.hasError) ...[
                     ConstrainedBox(
@@ -118,7 +116,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                       child: FilledButton.icon(
                         onPressed: () => _goToOnboarding(context),
                         icon: const Icon(Icons.arrow_forward),
-                        label: Text(l10n.setupWizardConfigureApiKeys),
+                        label: const Text('Configure API Keys'),
                       ),
                     )
                   else if (!_started || state.hasError)
@@ -132,14 +130,14 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                                 provider.runSetup();
                               },
                         icon: const Icon(Icons.download),
-                        label: Text(_started ? l10n.setupWizardRetry : l10n.setupWizardBegin),
+                        label: Text(_started ? 'Retry Setup' : 'Begin Setup'),
                       ),
                     ),
                   if (!_started) ...[
                     const SizedBox(height: 8),
                     Center(
                       child: Text(
-                        l10n.setupWizardStorageRequirements,
+                        'Requires ~500MB of storage and an internet connection',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -164,13 +162,13 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
     );
   }
 
-  Widget _buildSteps(SetupState state, ThemeData theme, bool isDark, AppLocalizations l10n) {
+  Widget _buildSteps(SetupState state, ThemeData theme, bool isDark) {
     final steps = [
-      {'num': 1, 'label': l10n.setupStepDownloadRootfs, 'step': SetupStep.downloadingRootfs},
-      {'num': 2, 'label': l10n.setupStepExtractRootfs, 'step': SetupStep.extractingRootfs},
-      {'num': 3, 'label': l10n.setupStepInstallNode, 'step': SetupStep.installingNode},
-      {'num': 4, 'label': l10n.setupStepInstallOpenClaw, 'step': SetupStep.installingOpenClaw},
-      {'num': 5, 'label': l10n.setupStepConfigureBypass, 'step': SetupStep.configuringBypass},
+      {'num': 1, 'label': 'Download Ubuntu rootfs', 'step': SetupStep.downloadingRootfs},
+      {'num': 2, 'label': 'Extract rootfs', 'step': SetupStep.extractingRootfs},
+      {'num': 3, 'label': 'Install Node.js', 'step': SetupStep.installingNode},
+      {'num': 4, 'label': 'Install OpenClaw', 'step': SetupStep.installingOpenClaw},
+      {'num': 5, 'label': 'Configure Bionic Bypass', 'step': SetupStep.configuringBypass},
     ];
 
     return ListView(
@@ -187,14 +185,14 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
         if (state.isComplete) ...[
           ProgressStep(
             stepNumber: 6,
-            label: l10n.setupStepComplete,
+            label: 'Setup complete!',
             isComplete: true,
           ),
           const SizedBox(height: 24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
-              l10n.optionalPackagesTitle,
+              'OPTIONAL PACKAGES',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontWeight: FontWeight.w600,
@@ -204,13 +202,13 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
           ),
           const SizedBox(height: 8),
           for (final pkg in OptionalPackage.all)
-            _buildPackageTile(theme, pkg, isDark, l10n),
+            _buildPackageTile(theme, pkg, isDark),
         ],
       ],
     );
   }
 
-  Widget _buildPackageTile(ThemeData theme, OptionalPackage package, bool isDark, AppLocalizations l10n) {
+  Widget _buildPackageTile(ThemeData theme, OptionalPackage package, bool isDark) {
     final installed = _pkgStatuses[package.id] ?? false;
     final iconBg = isDark ? AppColors.darkSurfaceAlt : const Color(0xFFF3F4F6);
 
@@ -239,7 +237,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
                   color: AppColors.statusGreen.withAlpha(25),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Text(l10n.installedLabel,
+                child: Text('Installed',
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: AppColors.statusGreen,
                       fontWeight: FontWeight.w600,
@@ -253,7 +251,7 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
             ? const Icon(Icons.check_circle, color: AppColors.statusGreen)
             : OutlinedButton(
                 onPressed: () => _installPackage(package),
-                child: Text(l10n.installButton),
+                child: const Text('Install'),
               ),
       ),
     );

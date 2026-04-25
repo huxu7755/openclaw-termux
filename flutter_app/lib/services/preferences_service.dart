@@ -12,7 +12,6 @@ class PreferencesService {
   static const _keyNodePublicKey = 'node_ed25519_public';
   static const _keyNodeGatewayToken = 'node_gateway_token';
   static const _keyLastAppVersion = 'last_app_version';
-  static const _keyLocale = 'app_locale';
 
   late SharedPreferences _prefs;
 
@@ -88,20 +87,6 @@ class PreferencesService {
       _prefs.setInt(_keyNodeGatewayPort, value);
     } else {
       _prefs.remove(_keyNodeGatewayPort);
-    }
-  }
-
-  Locale? get locale {
-    final localeCode = _prefs.getString(_keyLocale);
-    if (localeCode == null || localeCode.isEmpty) return null;
-    return Locale(localeCode);
-  }
-
-  set locale(Locale? value) {
-    if (value != null) {
-      _prefs.setString(_keyLocale, value.languageCode);
-    } else {
-      _prefs.remove(_keyLocale);
     }
   }
 }

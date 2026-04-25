@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'providers/setup_provider.dart';
@@ -37,9 +35,7 @@ class AppColors {
 }
 
 class OpenClawApp extends StatelessWidget {
-  final Locale? locale;
-
-  const OpenClawApp({super.key, this.locale});
+  const OpenClawApp();
 
   @override
   Widget build(BuildContext context) {
@@ -61,17 +57,6 @@ class OpenClawApp extends StatelessWidget {
         theme: _buildLightTheme(),
         darkTheme: _buildDarkTheme(),
         themeMode: ThemeMode.system,
-        locale: locale,
-        supportedLocales: const [
-          Locale('en'),
-          Locale('zh'),
-        ],
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
         home: const SplashScreen(),
       ),
     );

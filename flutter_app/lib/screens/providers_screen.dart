@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../app.dart';
 import '../models/ai_provider.dart';
 import '../services/provider_config_service.dart';
@@ -50,25 +49,24 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
     }
   }
 
-  String _statusLabel(AiProvider provider, AppLocalizations l10n) {
+  String _statusLabel(AiProvider provider) {
     final isConfigured = _providers.containsKey(provider.id);
     if (!isConfigured) return '';
     if (_activeModel != null) {
       final isActive = provider.defaultModels.any((m) => _activeModel!.contains(m)) ||
           _activeModel!.contains(provider.id);
-      if (isActive) return l10n.active;
+      if (isActive) return 'Active';
     }
-    return l10n.configured;
+    return 'Configured';
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.aiProviders)),
+      appBar: AppBar(title: Text('AI Providers')),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -97,7 +95,7 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  l10n.activeModel,
+                                  'Active Model',
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: AppColors.statusGreen,
                                     fontWeight: FontWeight.w600,
@@ -120,23 +118,23 @@ class _ProvidersScreenState extends State<ProvidersScreen> {
                   const SizedBox(height: 16),
                 ],
                 Text(
-                  l10n.selectProviderHint,
+                  'Select a provider to configure its API key and model.',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 16),
                 for (final provider in AiProvider.all)
-                  _buildProviderCard(theme, provider, isDark, l10n),
+                  _buildProviderCard(theme, provider, isDark),
               ],
             ),
     );
   }
 
-  Widget _buildProviderCard(ThemeData theme, AiProvider provider, bool isDark, AppLocalizations l10n) {
+  Widget _buildProviderCard(ThemeData theme, AiProvider provider, bool isDark) {
     final iconBg = isDark ? AppColors.darkSurfaceAlt : const Color(0xFFF3F4F6);
-    final status = _statusLabel(provider, l10n);
-    final statusLabel = l10n.active;
+    final status = _statusLabel(provider);
+    final statusLabel = 'Active';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
