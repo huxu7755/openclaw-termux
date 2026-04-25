@@ -166,23 +166,23 @@ class _SetupWizardScreenState extends State<SetupWizardScreen> {
 
   Widget _buildSteps(SetupState state, ThemeData theme, bool isDark, AppLocalizations l10n) {
     final steps = [
-      (1, l10n.setupStepDownloadRootfs, SetupStep.downloadingRootfs),
-      (2, l10n.setupStepExtractRootfs, SetupStep.extractingRootfs),
-      (3, l10n.setupStepInstallNode, SetupStep.installingNode),
-      (4, l10n.setupStepInstallOpenClaw, SetupStep.installingOpenClaw),
-      (5, l10n.setupStepConfigureBypass, SetupStep.configuringBypass),
+      {'num': 1, 'label': l10n.setupStepDownloadRootfs, 'step': SetupStep.downloadingRootfs},
+      {'num': 2, 'label': l10n.setupStepExtractRootfs, 'step': SetupStep.extractingRootfs},
+      {'num': 3, 'label': l10n.setupStepInstallNode, 'step': SetupStep.installingNode},
+      {'num': 4, 'label': l10n.setupStepInstallOpenClaw, 'step': SetupStep.installingOpenClaw},
+      {'num': 5, 'label': l10n.setupStepConfigureBypass, 'step': SetupStep.configuringBypass},
     ];
 
     return ListView(
       children: [
-        for (final (num, label, step) in steps)
+        for (final item in steps)
           ProgressStep(
-            stepNumber: num,
-            label: state.step == step ? state.message : label,
-            isActive: state.step == step,
-            isComplete: state.stepNumber > step.index || state.isComplete,
-            hasError: state.hasError && state.step == step,
-            progress: state.step == step ? state.progress : null,
+            stepNumber: item['num'] as int,
+            label: state.step == item['step'] ? state.message : item['label'] as String,
+            isActive: state.step == item['step'],
+            isComplete: state.stepNumber > (item['step'] as SetupStep).index || state.isComplete,
+            hasError: state.hasError && state.step == item['step'],
+            progress: state.step == item['step'] ? state.progress : null,
           ),
         if (state.isComplete) ...[
           ProgressStep(
