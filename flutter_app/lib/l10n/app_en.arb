@@ -1,0 +1,169 @@
+{
+  "@@locale": "en",
+  "appTitle": "OpenClaw",
+  "aiProviders": "AI Providers",
+  "activeModel": "Active Model",
+  "selectProviderHint": "Select a provider to configure its API key and model.",
+  "configured": "Configured",
+  "active": "Active",
+  "apiKey": "API Key",
+  "model": "Model",
+  "custom": "Custom...",
+  "customModelName": "Custom model name",
+  "customModelHint": "e.g. meta/llama-3.3-70b-instruct",
+  "saveAndActivate": "Save & Activate",
+  "removeConfiguration": "Remove Configuration",
+  "apiKeyCannotBeEmpty": "API key cannot be empty",
+  "modelNameCannotBeEmpty": "Model name cannot be empty",
+  "providerConfigured": "{name} configured and activated",
+  "@providerConfigured": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "providerRemoved": "{name} removed",
+  "@providerRemoved": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "failedToSave": "Failed to save: {error}",
+  "@failedToSave": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "failedToRemove": "Failed to remove: {error}",
+  "@failedToRemove": {
+    "placeholders": {
+      "error": {"type": "String"}
+    }
+  },
+  "removeProviderTitle": "Remove {name}?",
+  "@removeProviderTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "removeProviderContent": "This will delete the API key and deactivate the model.",
+  "cancel": "Cancel",
+  "remove": "Remove",
+  "openclawOnboarding": "OpenClaw Onboarding",
+  "startingOnboarding": "Starting onboarding...",
+  "retry": "Retry",
+  "goToDashboard": "Go to Dashboard",
+  "done": "Done",
+  "openLink": "Open Link",
+  "copy": "Copy",
+  "open": "Open",
+  "noUrlFound": "No URL found in selection",
+  "screenshot": "Screenshot",
+  "paste": "Paste",
+  "copiedToClipboard": "Copied to clipboard",
+  "linkCopied": "Link copied",
+  "screenshotSaved": "Screenshot saved: {path}",
+  "@screenshotSaved": {
+    "placeholders": {
+      "path": {"type": "String"}
+    }
+  },
+  "failedToCaptureScreenshot": "Failed to capture screenshot",
+  "settings": "Settings",
+  "language": "Language",
+  "english": "English",
+  "chinese": "中文",
+  "dashboard": "Dashboard",
+  "gateway": "Gateway",
+  "terminal": "Terminal",
+  "providers": "Providers",
+  "packages": "Packages",
+  "node": "Node",
+  "ssh": "SSH",
+  "logs": "Logs",
+  "setup": "Setup",
+  "configure": "Configure",
+  "startGateway": "Start Gateway",
+  "stopGateway": "Stop Gateway",
+  "gatewayRunning": "Gateway running",
+  "gatewayStopped": "Gateway stopped",
+  "healthCheck": "Health Check",
+  "autoStart": "Auto Start",
+  "batteryOptimization": "Battery Optimization",
+  "systemInfo": "System Info",
+  "packageStatus": "Package Status",
+  "rerunSetup": "Re-run Setup",
+  "beginSetup": "Begin Setup",
+  "setupInProgress": "Setup in progress...",
+  "setupComplete": "Setup complete!",
+  "downloadFailed": "Download failed",
+  "extractionFailed": "Extraction failed",
+  "onboarding": "Onboarding",
+  "runOnboarding": "Run Onboarding",
+  "packagesTitle": "Optional Packages",
+  "installPackage": "Install",
+  "uninstallPackage": "Uninstall",
+  "installing": "Installing...",
+  "uninstalling": "Uninstalling...",
+  "packageInstalled": "{name} installed",
+  "@packageInstalled": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "packageUninstalled": "{name} uninstalled",
+  "@packageUninstalled": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "go": "Go (Golang)",
+  "homebrew": "Homebrew",
+  "openssh": "OpenSSH",
+  "nodeControls": "Node Controls",
+  "enableNode": "Enable Node",
+  "disableNode": "Disable Node",
+  "nodeEnabled": "Node enabled",
+  "nodeDisabled": "Node disabled",
+  "nodeCapabilities": "Node Capabilities",
+  "camera": "Camera",
+  "location": "Location",
+  "flash": "Flash",
+  "screen": "Screen",
+  "sensor": "Sensor",
+  "haptic": "Haptic",
+  "canvas": "Canvas",
+  "battery": "Battery",
+  "sshServer": "SSH Server",
+  "startSshServer": "Start SSH Server",
+  "stopSshServer": "Stop SSH Server",
+  "setRootPassword": "Set Root Password",
+  "connectionInfo": "Connection Info",
+  "copyCommand": "Copy Command",
+  "sshServerRunning": "SSH Server running",
+  "sshServerStopped": "SSH Server stopped",
+  "rootPasswordSet": "Root password set",
+  "logsTitle": "Gateway Logs",
+  "searchLogs": "Search logs...",
+  "clearLogs": "Clear Logs",
+  "noLogsYet": "No logs yet",
+  "gatewayLogs": "Gateway Logs",
+  "onboardingComplete": "Onboarding complete! You can close this screen.",
+  "tipLoopback": "TIP: Select Loopback (127.0.0.1) when asked for binding!",
+  "configureApiKeys": "Configure your API keys and binding settings.",
+  "setupWizardTitle": "Setup OpenClaw",
+  "setupWizardDescription": "This will download Ubuntu, Node.js, and OpenClaw into a self-contained environment.",
+  "setupWizardInProgress": "Setting up the environment. This may take several minutes.",
+  "setupWizardConfigureApiKeys": "Configure API Keys",
+  "setupWizardBegin": "Begin Setup",
+  "setupWizardRetry": "Retry Setup",
+  "setupWizardStorageRequirements": "Requires ~500MB of storage and an internet connection",
+  "setupStepDownloadRootfs": "Download Ubuntu rootfs",
+  "setupStepExtractRootfs": "Extract rootfs",
+  "setupStepInstallNode": "Install Node.js",
+  "setupStepInstallOpenClaw": "Install OpenClaw",
+  "setupStepConfigureBypass": "Configure Bionic Bypass",
+  "setupStepComplete": "Setup complete!",
+  "optionalPackagesTitle": "OPTIONAL PACKAGES",
+  "installedLabel": "Installed",
+  "installButton": "Install"
+}
