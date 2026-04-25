@@ -107,10 +107,6 @@ jobs:
         working-directory: flutter_app
         run: flutter pub get
 
-      - name: Generate localization files
-        working-directory: flutter_app
-        run: flutter gen-l10n
-
       - name: Analyze Dart code
         working-directory: flutter_app
         run: flutter analyze --no-fatal-infos
